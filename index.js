@@ -1,6 +1,7 @@
 
 require("dotenv").config();
-const { Client, GatewayIntentBits  } = require("discord.js");
+const { Client, GatewayIntentBits, AttachmentBuilder   } = require("discord.js");
+const roleID = process.env.ROLE_ID;
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -11,16 +12,21 @@ const client = new Client({
 });
 
 client.once("ready", () => {
-	console.log("Ghost is online.");
+	console.log("CU Bot is online.");
 });
 
 client.on("messageCreate", message => {
-	if (message.content === '>listGMs') {
-        let roleID = '353002125342801924';
-        let membersWithRole = message.guild.roles.cache.get(roleID).members;
-        message.reply(`Got ${membersWithRole.size} members with that role.`);
-        console.log(membersWithRole);
-	}
+	if (message.content === '>listGiveawayEntries') {
+        //let roleID = '1065333204707455026';
+        let membersWithRole = message.guild.roles.cache.get(roleID).members.map(m=>m.user.tag);
+        //create file 
+        let attachFile = new AttachmentBuilder(Buffer.from(membersWithRole.join('\r\n')), { name: 'listMembers.txt' })
+        message.reply(`working on it. ${membersWithRole.length} members written to file, I will post attachment`);
+        message.channel.send({
+            content: "ok here you go I did it",
+            files: [attachFile]
+        });
+    }
 });
 
 client.login(process.env.CLIENT_TOKEN);
